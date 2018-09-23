@@ -30,7 +30,7 @@ public class TestClient {
             }
         } else {
             // Get IP and port from GUI prompt
-            ip = JOptionPane.showInputDialog(null, "Enter IP:");
+            ip = JOptionPane.showInputDialog(null, "Enter IP plox:");
             if (ip == null)
                 return;
             port = 19132;
