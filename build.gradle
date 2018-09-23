@@ -1,0 +1,11 @@
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.whirvis:jraknet:2.10.3'
+}
