@@ -194,3 +194,14 @@ dec: 95 hex: 5F bin: 1011111
 
 Name	
 invisiblebedrock
+
+Items
+
+Nether Portal (named portal ingame)
+End portal (named tile.end_portal.name ingame)
+End Gateways (named tile.end_gateway.name ingame)
+Air block (named tile.moving_block.name ingame)
+Still water (named water ingame)
+flowing water (named water ingame)
+flowing lava (named lava ingame)
+lava (named tile.lava.name)
