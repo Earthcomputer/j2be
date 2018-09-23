@@ -1,0 +1,207 @@
+reserved6
+
+Type	
+Unknown
+
+Physics	
+No
+
+Transparency	
+No
+
+Luminance	
+None
+
+Tool	
+Any tool
+
+Data value	
+dec: 255 hex: FF bin: 11111111
+
+Name	
+reserved6
+
+Nether Reactor Core
+
+Type	
+Solid Block
+
+Requirements	
+None
+
+Physics	
+No
+
+Transparency	
+No
+
+Luminance	
+Yes
+
+Blast resistance	
+30
+
+Hardness	
+?
+
+Tool	
+
+
+Renewable	
+No
+
+Stackable	
+Yes (64)
+
+Flammable	
+No
+
+
+Drops	
+
+Diamond (3)
+
+Iron Ingot (6)
+Block entity id	
+NetherReactor
+
+Data value	
+dec: 247 hex: F7 bin: 11110111
+
+Name	
+netherreactor
+
+info update
+
+Type	
+Unknown
+
+Physics	
+No
+
+Transparency	
+No
+
+Luminance	
+None
+
+Tool	
+
+Data values	
+update!
+dec: 248 hex: F8 bin: 11111000
+ate!upd
+dec: 249 hex: F9 bin: 11111001
+Name	
+update!: info_update
+ate!upd: info_update2
+
+Stonecutter
+Stonecutter.png
+
+Transparency	
+No
+
+Luminance	
+No
+
+Blast resistance	
+17.5
+
+Tool	
+
+
+Renewable	
+No
+
+Stackable	
+Yes (64)
+
+Flammable	
+No
+
+Drops	
+Itself
+
+Data value	
+dec: 245 hex: F5 bin: 11110101
+
+Name	
+stonecutter
+
+Glowing Obsidian
+
+Transparency	
+No
+
+Luminance	
+Yes, 12
+
+Blast resistance	
+6,000
+
+Renewable	
+No
+
+Stackable	
+Yes, 64
+
+Flammable	
+No
+
+Availability	
+Bedrock Edition & New Nintendo 3DS Edition
+
+Drops	
+1 
+Obsidian (drops itself with silk)
+
+Data value	
+dec: 246 hex: F6 bin: 11110110
+
+Name	
+glowingobsidian
+
+Invisible Bedrock
+
+Transparency	
+Transparent in rendering only
+(blocks light)
+
+Luminance	
+No
+
+Blast resistance	
+18,000,000
+
+Tool	
+None
+
+Renewable	
+No
+
+Stackable	
+Yes (64)
+
+Flammable	
+No
+
+Drops	
+Nothing
+
+Data value	
+dec: 95 hex: 5F bin: 1011111
+
+Name	
+invisiblebedrock
+
+Items
+
+Nether Portal (named portal ingame)
+End portal (named tile.end_portal.name ingame)
+End Gateways (named tile.end_gateway.name ingame)
+Air block (named tile.moving_block.name ingame)
+Still water (named water ingame)
+flowing water (named water ingame)
+flowing lava (named lava ingame)
+lava (named tile.lava.name)
