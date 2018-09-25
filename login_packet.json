@@ -1,0 +1,45 @@
+keyPair = KeyPairGenerator.getInstance("RSA").genKeyPair()
+
+payload = {
+    "identityPublicKey": new String(keyPair.getPublic().getEncoded()),
+    "extraData": {
+        "displayName": accountName,
+        "identity": UUID.randomUUID().toString(),
+        "XUID": null
+    }
+}
+
+certData = {
+    "chain": [
+        new JWSObject(new JWSHeader(JWSAlgorithm.HS_256), new Payload(payload)).sign(new MACSigner("fakeKey")).serialize()
+    ]
+}
+
+clientData = {
+    "TenantId": "",
+    "ADRole": "",
+    "CapeData": "",
+    "ClientRandomId": 0,
+    "CurrentInputMode": 0,
+    "DefaultInputMode": 0,
+    "DeviceId": "",
+    "DeviceModel": "",
+    "DeviceOS": "",
+    "GameVersion": "",
+    "GuiScale": 0,
+    "IsEduMode": false,
+    "LanguageCode": "",
+    "PlatformOfflineId": "",
+    "PlatformOnlineId": "",
+    "PremiumSkin": false,
+    "SelfSignedId": "",
+    "ServerAddress": "",
+    "SkinData": "",
+    "SkinGeometry": "",
+    "SkinGeometryName": "",
+    "SkinId": "",
+    "ThirdPartyName": "",
+    "UIProfile": 0
+}
+
+skinData = new JWSObject(new JWSHeader(JWSAlgorithm.RS256), new Payload(payload)).sign(new RSASSASigner((RSAPrivateKey) keyPair.getPrivate())).serialize()
