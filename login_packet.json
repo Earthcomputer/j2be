@@ -16,30 +16,10 @@ certData = {
 }
 
 clientData = {
-    "TenantId": "",
-    "ADRole": "",
-    "CapeData": "",
-    "ClientRandomId": 0,
-    "CurrentInputMode": 0,
-    "DefaultInputMode": 0,
-    "DeviceId": "",
-    "DeviceModel": "",
-    "DeviceOS": "",
-    "GameVersion": "",
-    "GuiScale": 0,
+    "GameVersion": "1.6.1",
     "IsEduMode": false,
-    "LanguageCode": "",
-    "PlatformOfflineId": "",
-    "PlatformOnlineId": "",
-    "PremiumSkin": false,
-    "SelfSignedId": "",
-    "ServerAddress": "",
-    "SkinData": "",
-    "SkinGeometry": "",
-    "SkinGeometryName": "",
-    "SkinId": "",
-    "ThirdPartyName": "",
-    "UIProfile": 0
+    "LanguageCode": "en_US",
+    "ServerAddress": serverAddress
 }
 
-skinData = new JWSObject(new JWSHeader(JWSAlgorithm.RS256), new Payload(payload)).sign(new RSASSASigner((RSAPrivateKey) keyPair.getPrivate())).serialize()
+skinData = new JWSObject(new JWSHeader(JWSAlgorithm.RS256), new Payload(clientData)).sign(new RSASSASigner((RSAPrivateKey) keyPair.getPrivate())).serialize()
