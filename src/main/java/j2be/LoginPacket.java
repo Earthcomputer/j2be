@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class LoginPacket extends BEPacket {
     private static final Gson GSON = new Gson();
+    private static final String FAKE_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private int protocolVersion;
     private AuthData authData;
@@ -24,7 +25,7 @@ public class LoginPacket extends BEPacket {
     }
 
     public LoginPacket(int protocolVersion, AuthData authData, ClientData clientData) {
-        this(protocolVersion, authData, clientData, Arrays.asList("thisKeyIsFake"), "thisKeyIsFake");
+        this(protocolVersion, authData, clientData, Arrays.asList(FAKE_KEY), FAKE_KEY);
     }
 
     public LoginPacket(int protocolVersion, AuthData authData, ClientData clientData, List<String> chain, String startKey) {
