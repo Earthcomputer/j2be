@@ -19,6 +19,7 @@ public abstract class BEPacket extends Packet {
 
     static {
         registerPacket(0x01, LoginPacket.class);
+        registerPacket(0x04, ClientToServerHandshakePacket.class);
     }
 
     protected BEPacket() {}
