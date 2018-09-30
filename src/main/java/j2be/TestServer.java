@@ -52,7 +52,7 @@ public class TestServer {
 				System.out.println(ByteBufUtil.hexDump(decompressedPacket));
 				System.out.println("---");
 				System.out.println(WrappedPacketUtils.readUnsignedVarInt(decompressedPacket));
-				System.out.println(WrappedPacketUtils.decodeUnsigned(decompressedPacket));
+					
 				
 		
 			}

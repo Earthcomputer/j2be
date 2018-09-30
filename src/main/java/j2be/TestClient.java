@@ -4,11 +4,14 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import com.whirvis.jraknet.Packet;
 import com.whirvis.jraknet.RakNetException;
 import com.whirvis.jraknet.client.RakNetClient;
 import com.whirvis.jraknet.client.RakNetClientListener;
 import com.whirvis.jraknet.protocol.Reliability;
 import com.whirvis.jraknet.session.RakNetServerSession;
+
+import io.netty.buffer.ByteBuf;
 
 public class TestClient {
 
@@ -52,16 +55,15 @@ public class TestClient {
             public void onConnect(RakNetServerSession session) {
                 System.out.println("Successfully connected to server with address " + session.getAddress());
                 //client.disconnect();
-                ClientToServerHandshakePacket packet = new ClientToServerHandshakePacket();
-                packet.serialize();
-                session.sendMessage(Reliability.RELIABLE, packet);
-                /*
                 LoginPacket.AuthData authData = new LoginPacket.AuthData("TestUsername");
                 LoginPacket.ClientData clientData = new LoginPacket.ClientData("1.6.1", "en_US", ip + ":" + port);
                 LoginPacket packet = new LoginPacket(282, authData, clientData);
                 packet.serialize();
-                session.sendMessage(Reliability.RELIABLE, packet);
-                */
+                ByteBuf compressedPacket = CompressionUtils.compress(packet.buffer());
+                ByteBuf wrappedPacket = WrappedPacketUtils.singlePacketWrap(compressedPacket);
+                session.sendMessage(Reliability.RELIABLE, new Packet(wrappedPacket));
+                System.out.println("Login Packet Sent");
+                
             }
 
             // Server disconnected
