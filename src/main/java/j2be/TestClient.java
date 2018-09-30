@@ -59,7 +59,8 @@ public class TestClient {
                 LoginPacket.ClientData clientData = new LoginPacket.ClientData("1.6.1", "en_US", ip + ":" + port);
                 LoginPacket packet = new LoginPacket(282, authData, clientData);
                 packet.serialize();
-                ByteBuf compressedPacket = CompressionUtils.compress(packet.buffer());
+                ByteBuf prependedPacket = WrappedPacketUtils.prependLength(packet.buffer());
+                ByteBuf compressedPacket = CompressionUtils.compress(prependedPacket);
                 ByteBuf wrappedPacket = WrappedPacketUtils.singlePacketWrap(compressedPacket);
                 session.sendMessage(Reliability.RELIABLE, new Packet(wrappedPacket));
                 System.out.println("Login Packet Sent");

@@ -20,6 +20,21 @@ public class WrappedPacketUtils {
         return value | (b << i);
     }
 	
+		public static ByteBuf prependLength(ByteBuf inputPacket) {
+			ByteBuf outputPacket = Unpooled.buffer();
+			int packetLength = inputPacket.writerIndex();
+			while ((packetLength & 0xFFFFFF80) != 0L) {
+	            outputPacket.writeByte((packetLength & 0x7F) | 0x80);
+	            packetLength >>>= 7;
+	        }
+	        outputPacket.writeByte(packetLength & 0x7F);
+	        outputPacket.writeBytes(inputPacket);
+	        return outputPacket;
+	    }
+			
+			
+		
+	
 	public static ByteBuf singlePacketWrap(ByteBuf inputPacket) {
 		ByteBuf outputPacket = Unpooled.buffer();
 		outputPacket.writeByte(0xfe);
