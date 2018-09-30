@@ -11,6 +11,9 @@ import com.whirvis.jraknet.server.RakNetServerListener;
 import com.whirvis.jraknet.session.RakNetClientSession;
 import com.whirvis.jraknet.windows.UniversalWindowsProgram;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+
 public class TestServer {
 	public static void main(String[] args)throws RakNetException{
 		// Add loopback exemption for Minecraft
@@ -20,7 +23,7 @@ public class TestServer {
 	
 		// Create server
 		RakNetServer server = new RakNetServer(19132, 10,
-				new MinecraftIdentifier("JRakNet Example Server", 137, "1.2", 0, 10,
+				new MinecraftIdentifier("JRakNet Example Server", 282, "1.6.1", 0, 10,
 						new Random().nextLong() /* Server broadcast ID */, "New World", "Survival"));
 	
 		// Add listener
@@ -44,10 +47,16 @@ public class TestServer {
 			public void handleMessage(RakNetClientSession session, RakNetPacket packet, int channel) {
 				System.out.println("Client from address " + session.getAddress() + " sent packet with ID "
 						+ RakNet.toHexStringId(packet) + " on channel " + channel);
+				
+				ByteBuf decompressedPacket = CompressionUtils.decompress(packet.buffer());
+				System.out.println(ByteBufUtil.hexDump(decompressedPacket));
+				
+		
 			}
 	
 		});
 		server.start();
+		
 		
 
 	};
