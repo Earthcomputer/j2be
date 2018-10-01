@@ -22,13 +22,14 @@ import java.util.stream.Collectors;
 
 public class LoginPacket extends BEPacket {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(KeyPair.class, new PublicKeySerializer()).create();
-    private static final KeyPair FAKE_KEY;
+    private static final JWSAlgorithm JWS_ALGORITHM = JWSAlgorithm.ES384;
+    private static final Curve KEYGEN_CURVE = Curve.P_384;
 
-    static {
+    public static KeyPair generateKey() {
         try {
-            FAKE_KEY = new ECKeyGenerator(Curve.P_384).generate().toKeyPair();
+            return new ECKeyGenerator(KEYGEN_CURVE).generate().toKeyPair();
         } catch (JOSEException e) {
-            throw new AssertionError("Earthcomputer is an idiot", e);
+            throw new AssertionError(e);
         }
     }
 
@@ -42,10 +43,16 @@ public class LoginPacket extends BEPacket {
         super(buf);
     }
 
+    /**
+     * Constructor for use with no xbox auth (offline mode)
+     */
     public LoginPacket(int protocolVersion, AuthData authData, ClientData clientData) {
-        this(protocolVersion, authData, clientData, Arrays.asList(FAKE_KEY), FAKE_KEY);
+        this(protocolVersion, authData, clientData, Arrays.asList(generateKey()), generateKey());
     }
 
+    /**
+     * Constructor used to log in with xbox auth
+     */
     public LoginPacket(int protocolVersion, AuthData authData, ClientData clientData, List<KeyPair> chain, KeyPair startKey) {
         this.protocolVersion = protocolVersion;
         this.authData = authData;
@@ -59,46 +66,78 @@ public class LoginPacket extends BEPacket {
         writeInt(protocolVersion);
 
         ByteBuf contentBuf = Unpooled.buffer();
+        writeChainData(contentBuf);
+        writeClientData(contentBuf);
 
+        VarInts.writeUnsignedVarInt(buffer(), contentBuf.writerIndex());
+        buffer().writeBytes(contentBuf);
+    }
+
+    /**
+     * Write chain data containing public key chain and auth data to the buffer
+     */
+    private void writeChainData(ByteBuf buf) {
+        // Convert list of KeyPairs to list of json ChainNodes
         List<ChainNode> chainNodes = chain.stream().map(ChainNode::new).collect(Collectors.toList());
+        // Add authData to the end of the chain
         chainNodes.get(chainNodes.size() - 1).extraData = authData;
 
+        // Convert ChainNodes to JWS signed objects
         List<String> jwsList = new ArrayList<>(chainNodes.size());
         for (int i = 0; i < chainNodes.size(); i++) {
             ChainNode chainNode = chainNodes.get(i);
+
+            // convert chain node to json
             String json = GSON.toJson(chainNode);
-            JWSObject jws = new JWSObject(new JWSHeader(JWSAlgorithm.ES384), new Payload(json));
+            // construct jws object with the json as the payload
+            JWSObject jws = new JWSObject(new JWSHeader(JWS_ALGORITHM), new Payload(json));
+
+            // use previous key
             KeyPair key;
             if (i == 0)
                 key = startKey;
             else
                 key = chainNodes.get(i - 1).identityPublicKey;
+
+            // sign the jws object
             try {
                 jws.sign(new ECDSASigner((ECPrivateKey) key.getPrivate()));
             } catch (JOSEException e) {
                 throw new RuntimeException(e);
             }
+
+            // serialize the object and add it to the list
             jwsList.add(jws.serialize());
         }
+
+        // Wrap key chain into {"chain": [...]} json object because that makes sense (totally)
         Map<String, List<String>> chainData = ImmutableMap.of("chain", jwsList);
         String chainJson = GSON.toJson(chainData);
-        byte[] chainJsonBytes = chainJson.getBytes();
-        contentBuf.writeIntLE(chainJsonBytes.length);
-        contentBuf.writeBytes(chainJsonBytes);
 
+        // Write raw ASCII json to the buffer
+        byte[] chainJsonBytes = chainJson.getBytes();
+        buf.writeIntLE(chainJsonBytes.length);
+        buf.writeBytes(chainJsonBytes);
+    }
+
+    /**
+     * Write client data to the buffer, containing skin data and other metadata
+     */
+    private void writeClientData(ByteBuf buf) {
+        // Convert clientData to json
         String clientJson = GSON.toJson(clientData);
-        JWSObject jws = new JWSObject(new JWSHeader(JWSAlgorithm.ES384), new Payload(clientJson));
+        // Wrap json in jws object and sign
+        JWSObject jws = new JWSObject(new JWSHeader(JWS_ALGORITHM), new Payload(clientJson));
         try {
             jws.sign(new ECDSASigner((ECPrivateKey) chain.get(chain.size() - 1).getPrivate()));
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
-        byte[] clientBytes = jws.serialize().getBytes();
-        contentBuf.writeIntLE(clientBytes.length);
-        contentBuf.writeBytes(clientBytes);
 
-        VarInts.writeUnsignedVarInt(buffer(), contentBuf.writerIndex());
-        buffer().writeBytes(contentBuf);
+        // Write raw ASCII serialized jws object to the buffer
+        byte[] clientBytes = jws.serialize().getBytes();
+        buf.writeIntLE(clientBytes.length);
+        buf.writeBytes(clientBytes);
     }
 
     @Override
