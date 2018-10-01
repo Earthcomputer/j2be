@@ -51,7 +51,7 @@ public class TestServer {
 				ByteBuf decompressedPacket = CompressionUtils.decompress(packet.buffer());
 				System.out.println(ByteBufUtil.hexDump(decompressedPacket));
 				System.out.println("---");
-				System.out.println(WrappedPacketUtils.readUnsignedVarInt(decompressedPacket));
+				System.out.println(VarInts.readUnsignedVarInt(decompressedPacket));
 					
 				
 		

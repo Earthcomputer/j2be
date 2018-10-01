@@ -8,7 +8,7 @@ repositories {
 
 dependencies {
     compile 'com.whirvis:jraknet:2.10.3'
-    compile 'com.nimbusds:nimbus-jose-jwt:4.41.2'
+    compile 'com.nimbusds:nimbus-jose-jwt:6.0.2'
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'com.google.guava:guava:26.0-jre'
 }
