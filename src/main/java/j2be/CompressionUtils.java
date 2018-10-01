@@ -31,6 +31,12 @@ public class CompressionUtils {
 		inputPacket.readBytes(bytes);
 		return Unpooled.wrappedBuffer(compress(bytes));
 	}
+
+	public static void compress(ByteBuf inputPacket, ByteBuf output) {
+	    byte[] bytes = new byte[inputPacket.readableBytes()];
+	    inputPacket.readBytes(bytes);
+	    output.writeBytes(compress(bytes));
+    }
 	
 	public static byte[] decompress(byte[] compressedPacket) {
 		// will decompress compressedPacket
@@ -52,11 +58,16 @@ public class CompressionUtils {
 	}
 	
 	public static ByteBuf decompress(ByteBuf compressedPacket) {
-		System.out.println(compressedPacket.readerIndex());
 		byte[] bytes = new byte[compressedPacket.readableBytes()];
 		compressedPacket.readBytes(bytes);
 		return Unpooled.wrappedBuffer(decompress(bytes));
 	}
+
+	public static void decompress(ByteBuf compressedPacket, ByteBuf output) {
+	    byte[] bytes = new byte[compressedPacket.readableBytes()];
+	    compressedPacket.readBytes(bytes);
+	    output.writeBytes(decompress(bytes));
+    }
 	
 
 }

@@ -29,13 +29,20 @@ public abstract class BEPacket extends Packet {
         super(buf);
     }
 
+    private boolean isSerialized = false;
+
     public final void serialize() {
+        if (isSerialized) {
+            return;
+        }
+
         Integer packetId = packetIds.get(getClass());
         if (packetId == null) {
             throw new AssertionError("Tried to send unregistered packet of type " + getClass().getName());
         }
         writeUnsignedByte(packetId);
         serializeExtra();
+        isSerialized = true;
     }
 
     protected abstract void serializeExtra();
@@ -53,6 +60,8 @@ public abstract class BEPacket extends Packet {
             throw new AssertionError("Class " + clazz.getName() + " doesn't have a ByteBuf constructor");
         }
         packet.deserializeExtra();
+        packet.isSerialized = true;
+        packet.buffer().setIndex(0, 0);
         return packet;
     }
 

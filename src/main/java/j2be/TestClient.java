@@ -6,12 +6,14 @@ import javax.swing.JOptionPane;
 
 import com.whirvis.jraknet.Packet;
 import com.whirvis.jraknet.RakNetException;
+import com.whirvis.jraknet.RakNetPacket;
 import com.whirvis.jraknet.client.RakNetClient;
 import com.whirvis.jraknet.client.RakNetClientListener;
 import com.whirvis.jraknet.protocol.Reliability;
 import com.whirvis.jraknet.session.RakNetServerSession;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 
 public class TestClient {
 
@@ -58,11 +60,7 @@ public class TestClient {
                 LoginPacket.AuthData authData = new LoginPacket.AuthData("TestUsername");
                 LoginPacket.ClientData clientData = new LoginPacket.ClientData("1.6.1", "en_US", ip + ":" + port);
                 LoginPacket packet = new LoginPacket(282, authData, clientData);
-                packet.serialize();
-                ByteBuf prependedPacket = WrappedPacketUtils.prependLength(packet.buffer());
-                ByteBuf compressedPacket = CompressionUtils.compress(prependedPacket);
-                ByteBuf wrappedPacket = WrappedPacketUtils.singlePacketWrap(compressedPacket);
-                session.sendMessage(Reliability.RELIABLE, new Packet(wrappedPacket));
+                WrappedPacketUtils.sendPacket(session, packet);
                 System.out.println("Login Packet Sent");
                 
             }
@@ -75,6 +73,15 @@ public class TestClient {
                 client.shutdown();
             }
 
+            @Override
+            public void handleMessage(RakNetServerSession session, RakNetPacket packet, int channel) {
+                if (packet.getId() == 0xfe) { // wrapped packet
+                    for (BEPacket p : WrappedPacketUtils.unwrapPacket(packet.buffer())) {
+                        System.out.println("RECEIVED " + p.getClass().getSimpleName() + ":");
+                        ByteBufUtil.hexDump(p.buffer());
+                    }
+                }
+            }
         });
         
         try {

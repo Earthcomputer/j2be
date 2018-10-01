@@ -1,13 +1,21 @@
 package j2be;
 
+import io.netty.buffer.ByteBuf;
+
 public class ServerToClientHandshakePacket extends BEPacket {
+    public ServerToClientHandshakePacket() {}
+
+    public ServerToClientHandshakePacket(ByteBuf buf) {
+        super(buf);
+    }
+
     @Override
     protected void serializeExtra() {
-        // No payload
+        unsupported();
     }
 
     @Override
     protected void deserializeExtra() {
-        unsupported();
+        // Empty payload
     }
 }
