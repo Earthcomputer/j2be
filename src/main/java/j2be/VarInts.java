@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 public class VarInts {
 
     public static int readUnsignedVarInt(ByteBuf buf) {
-        buf.readerIndex(0);
         int value = 0;
         int i = 0;
         int b;

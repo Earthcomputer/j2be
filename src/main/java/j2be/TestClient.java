@@ -77,8 +77,7 @@ public class TestClient {
             public void handleMessage(RakNetServerSession session, RakNetPacket packet, int channel) {
                 if (packet.getId() == 0xfe) { // wrapped packet
                     for (BEPacket p : WrappedPacketUtils.unwrapPacket(packet.buffer())) {
-                        System.out.println("RECEIVED " + p.getClass().getSimpleName() + ":");
-                        ByteBufUtil.hexDump(p.buffer());
+                        System.out.println("RECEIVED " + p.getClass().getSimpleName());
                     }
                 }
             }

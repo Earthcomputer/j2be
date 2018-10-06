@@ -2,6 +2,7 @@ package j2be;
 
 import com.whirvis.jraknet.Packet;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -23,10 +24,15 @@ public abstract class BEPacket extends Packet {
         registerPacket(0x04, ClientToServerHandshakePacket.class);
     }
 
-    protected BEPacket() {}
+    private final ByteBuf buf;
+
+    protected BEPacket() {
+        buf = buffer();
+    }
 
     protected BEPacket(ByteBuf buf) {
         super(buf);
+        this.buf = buf;
     }
 
     private boolean isSerialized = false;
@@ -61,7 +67,7 @@ public abstract class BEPacket extends Packet {
         }
         packet.deserializeExtra();
         packet.isSerialized = true;
-        packet.buffer().setIndex(0, 0);
+        buf.setIndex(0, 0);
         return packet;
     }
 
@@ -71,8 +77,41 @@ public abstract class BEPacket extends Packet {
         throw new UnsupportedOperationException();
     }
 
-    protected void writeBytes(byte[] bytes) {
-        buffer().writeBytes(bytes);
+    protected void read(ByteBuf dest) {
+        buf.readBytes(dest);
+    }
+
+    protected void write(ByteBuf bytes) {
+        buf.writeBytes(bytes);
+    }
+
+    // Override string methods because why tf would you use the base ones
+
+    @Override
+    public String readString() {
+        return ByteBufs.readString(buf);
+    }
+
+    @Override
+    public Packet writeString(String str) {
+        ByteBufs.writeString(buf, str);
+        return this;
+    }
+
+    protected String readLEAsciiString(String str) {
+        return ByteBufs.readLEAsciiString(buf);
+    }
+
+    protected void writeLEAsciiString(String str) {
+        ByteBufs.writeLEAsciiString(buf, str);
+    }
+
+    protected int readUnsignedVarInt() {
+        return VarInts.readUnsignedVarInt(buf);
+    }
+
+    protected void writeUnsignedVarInt(int val) {
+        VarInts.writeUnsignedVarInt(buf, val);
     }
 
 }

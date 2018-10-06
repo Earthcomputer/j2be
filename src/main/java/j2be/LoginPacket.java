@@ -69,8 +69,8 @@ public class LoginPacket extends BEPacket {
         writeChainData(contentBuf);
         writeClientData(contentBuf);
 
-        VarInts.writeUnsignedVarInt(buffer(), contentBuf.writerIndex());
-        buffer().writeBytes(contentBuf);
+        writeUnsignedVarInt(contentBuf.writerIndex());
+        write(contentBuf);
     }
 
     /**
@@ -115,9 +115,7 @@ public class LoginPacket extends BEPacket {
         String chainJson = GSON.toJson(chainData);
 
         // Write raw ASCII json to the buffer
-        byte[] chainJsonBytes = chainJson.getBytes();
-        buf.writeIntLE(chainJsonBytes.length);
-        buf.writeBytes(chainJsonBytes);
+        ByteBufs.writeLEAsciiString(buf, chainJson);
     }
 
     /**
@@ -134,10 +132,8 @@ public class LoginPacket extends BEPacket {
             throw new RuntimeException(e);
         }
 
-        // Write raw ASCII serialized jws object to the buffer
-        byte[] clientBytes = jws.serialize().getBytes();
-        buf.writeIntLE(clientBytes.length);
-        buf.writeBytes(clientBytes);
+        // Write raw ASCII serialized jws object to the
+        ByteBufs.writeLEAsciiString(buf, jws.serialize());
     }
 
     @Override
