@@ -74,6 +74,8 @@ public class WrappedPacketUtils {
             packets.add(packet);
         }
 
+        uncompressed.release();
+
         return packets;
     }
 
